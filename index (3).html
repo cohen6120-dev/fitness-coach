@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#0f0f1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="סוכן כושר">
+<title>סוכן כושר אישי</title>
+<style>
+:root{--bg:#0f0f1a;--bg2:#1a1a2e;--bg3:#16213e;--card:#1e1e35;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);--text:#f0f0f5;--text2:#9090aa;--text3:#5a5a7a;--green:#4ade80;--green-bg:rgba(74,222,128,0.12);--green-border:rgba(74,222,128,0.25);--blue:#60a5fa;--blue-bg:rgba(96,165,250,0.12);--amber:#fbbf24;--amber-bg:rgba(251,191,36,0.12);--red:#f87171;--red-bg:rgba(248,113,113,0.12);--accent:#7c6af7;--radius:14px;--radius-sm:8px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI',sans-serif;font-size:15px}
+.app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;position:relative}
+.hdr{background:var(--bg2);padding:14px 16px 10px;border-bottom:1px solid var(--border);flex-shrink:0}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.hdr-title{font-size:17px;font-weight:600}
+.hdr-sub{font-size:12px;color:var(--text2);margin-top:1px}
+.badge{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);border-radius:20px;padding:3px 10px;font-size:12px;font-weight:500}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
+.kpi{background:var(--card);border-radius:var(--radius-sm);padding:8px 6px;text-align:center}
+.kpi-v{font-size:17px;font-weight:600;color:var(--text)}
+.kpi-l{font-size:10px;color:var(--text2);margin-top:2px}
+.nav{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
+.nb{flex:1;padding:10px 4px;font-size:11px;color:var(--text2);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;display:flex;flex-direction:column;align-items:center;gap:3px}
+.nb.on{color:var(--accent);border-bottom-color:var(--accent)}
+.ni{font-size:18px}
+.panels{flex:1;overflow:hidden}
+.panel{display:none;height:100%;overflow-y:auto;padding:14px 16px 80px}
+.panel.on{display:block}
+.chat-wrap{display:flex;flex-direction:column;height:100%}
+.msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-bottom:12px}
+.msg{display:flex;gap:8px;align-items:flex-end}
+.msg.u{flex-direction:row-reverse}
+.av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.ai .av{background:var(--accent);color:#fff}
+.u .av{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(96,165,250,0.3)}
+.bub{max-width:82%;padding:10px 13px;font-size:14px;line-height:1.6;white-space:pre-wrap}
+.ai .bub{background:var(--card);border:1px solid var(--border);border-radius:4px 14px 14px 14px;color:var(--text)}
+.u .bub{background:var(--accent);color:#fff;border-radius:14px 4px 14px 14px}
+.irow{display:flex;gap:8px;padding-top:10px;border-top:1px solid var(--border);flex-shrink:0}
+.irow input{flex:1;background:var(--card);border:1px solid var(--border2);border-radius:22px;padding:10px 16px;font-size:14px;color:var(--text);outline:none}
+.irow input::placeholder{color:var(--text3)}
+.send-btn{width:40px;height:40px;border-radius:50%;background:var(--accent);border:none;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.qrow{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;flex-shrink:0;scrollbar-width:none}
+.qrow::-webkit-scrollbar{display:none}
+.qb{white-space:nowrap;padding:6px 12px;border-radius:20px;background:var(--card);border:1px solid var(--border2);color:var(--text2);font-size:12px;cursor:pointer;flex-shrink:0}
+.dots{display:flex;gap:4px;align-items:center;padding:4px 0}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--text2);animation:p 1.2s ease-in-out infinite}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+@keyframes p{0%,60%,100%{opacity:.3;transform:scale(.8)}30%{opacity:1;transform:scale(1)}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+.card-title{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
+.row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
+.row:last-child{border-bottom:none}
+.rl{color:var(--text2)}
+.pill{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500}
+.pg{background:var(--green-bg);color:var(--green)}
+.pb{background:var(--blue-bg);color:var(--blue)}
+.pa{background:var(--amber-bg);color:var(--amber)}
+.pr{background:var(--red-bg);color:var(--red)}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:14px}
+.day{border-radius:var(--radius-sm);padding:8px 2px;text-align:center;font-size:10px;border:1px solid var(--border);background:var(--card)}
+.day.strength{background:rgba(124,106,247,0.15);border-color:rgba(124,106,247,0.35)}
+.day.cardio{background:var(--blue-bg);border-color:rgba(96,165,250,0.3)}
+.day.rest{background:var(--bg3)}
+.day-n{font-weight:600;color:var(--text2)}
+.day-t{margin-top:3px;font-weight:600;color:var(--text);font-size:9px}
+.pbar{background:var(--bg3);border-radius:99px;height:8px;overflow:hidden}
+.pfill{height:100%;border-radius:99px;background:var(--green);transition:width 1s ease}
+.pbar-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:4px}
+.night-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.nbtn{padding:12px;border-radius:var(--radius-sm);border:1px solid;font-size:13px;font-weight:500;cursor:pointer;text-align:center;background:none}
+.nbtn-ok{border-color:var(--green-border);color:var(--green)}
+.nbtn-fail{border-color:rgba(248,113,113,0.25);color:var(--red)}
+.streak-row{display:flex;gap:16px;justify-content:center;padding:12px;background:var(--bg3);border-radius:var(--radius-sm);margin-bottom:12px}
+.si{text-align:center}
+.sv{font-size:22px;font-weight:700}
+.sl{font-size:11px;color:var(--text2);margin-top:2px}
+.log-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:7px 0;border-bottom:1px solid var(--border)}
+.log-row:last-child{border-bottom:none}
+.win{display:flex;flex-direction:column;align-items:center;padding:14px 16px;font-size:13px}
+.w-inp-row{display:flex;gap:8px;align-items:center;margin-bottom:14px;width:100%}
+.w-inp-row input{flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:10px 14px;font-size:16px;color:var(--text);text-align:center;outline:none}
+.w-inp-row button{padding:10px 18px;border-radius:var(--radius-sm);background:var(--accent);border:none;color:#fff;font-size:14px;font-weight:500;cursor:pointer}
+.alert{background:var(--amber-bg);border:1px solid rgba(251,191,36,0.25);border-radius:var(--radius-sm);padding:10px 13px;font-size:13px;color:var(--amber);margin-bottom:12px;line-height:1.5}
+/* Key overlay */
+.overlay{position:absolute;inset:0;background:rgba(10,10,20,0.98);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;z-index:999;gap:14px}
+.overlay h2{font-size:20px;font-weight:600;color:var(--text);text-align:center}
+.overlay p{font-size:13px;color:var(--text2);text-align:center;line-height:1.7}
+.overlay input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--card);color:var(--text);font-size:13px;outline:none;direction:ltr;text-align:left}
+.overlay .btn-main{width:100%;padding:14px;border-radius:10px;background:var(--accent);border:none;color:#fff;font-size:15px;font-weight:600;cursor:pointer}
+.overlay a{color:var(--accent);font-size:12px}
+.key-icon{font-size:48px;margin-bottom:4px}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <div class="hdr">
+    <div class="hdr-top">
+      <div><div class="hdr-title">הסוכן האישי שלי 💪</div><div class="hdr-sub">88 ק"ג → 80 ק"ג | ללא חלב | גיל 45</div></div>
+      <div class="badge" id="streak-badge">רצף: 0 ימים</div>
+    </div>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="kpi-v" id="k-w">88.0</div><div class="kpi-l">משקל</div></div>
+    <div class="kpi"><div class="kpi-v">80</div><div class="kpi-l">יעד</div></div>
+    <div class="kpi"><div class="kpi-v" id="k-bmi">27.8</div><div class="kpi-l">BMI</div></div>
+    <div class="kpi"><div class="kpi-v" id="k-wk">~16</div><div class="kpi-l">שבועות</div></div>
+  </div>
+
+  <div class="nav">
+    <button class="nb on" onclick="show('chat',this)"><span class="ni">💬</span>שיחה</button>
+    <button class="nb" onclick="show('nutrition',this)"><span class="ni">🥗</span>תזונה</button>
+    <button class="nb" onclick="show('training',this)"><span class="ni">💪</span>אימון</button>
+    <button class="nb" onclick="show('track',this)"><span class="ni">📊</span>מעקב</button>
+  </div>
+
+  <div class="panels">
+
+    <div class="panel on" id="p-chat">
+      <div class="chat-wrap" style="height:100%">
+        <div class="msgs" id="msgs">
+          <div class="msg ai"><div class="av">AI</div><div class="bub">שלום! אני הסוכן שלך 🏋️
+
+אני זוכר: אין חלב, חלון אכילה עד 20:00, רקע ספורטיבי חזק.
+
+שאל אותי כל שאלה על תזונה, אימונים, או אכילת לילה!</div></div>
+        </div>
+        <div class="qrow">
+          <button class="qb" onclick="q('מה לאכול אחרי אימון ללא חלב?')">אחרי אימון</button>
+          <button class="qb" onclick="q('איך מפסיקים לאכול בלילה?')">אכילת לילה</button>
+          <button class="qb" onclick="q('ארוחת בוקר עשירה בחלבון ללא חלב')">ארוחת בוקר</button>
+          <button class="qb" onclick="q('כמה קלוריות ביום לירידה בריאה?')">קלוריות</button>
+          <button class="qb" onclick="q('תן לי תוכנית אימון לשבוע הראשון')">שבוע ראשון</button>
+        </div>
+        <div class="irow">
+          <input id="inp" type="text" placeholder="שאל שאלה..." inputmode="text"/>
+          <button class="send-btn" onclick="send()">↑</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="p-nutrition">
+      <div class="alert">⚠️ כל התפריט ללא מוצרי חלב — חלבון: ביצים, עוף, דגים, קטניות, טחינה</div>
+      <div class="card">
+        <div class="card-title">יעדים יומיים</div>
+        <div class="row"><span class="rl">קלוריות</span><span class="pill pg">1,900 קק"ל</span></div>
+        <div class="row"><span class="rl">חלבון</span><span class="pill pb">155 גר'</span></div>
+        <div class="row"><span class="rl">פחמימות</span><span class="pill pa">185 גר'</span></div>
+        <div class="row"><span class="rl">שומן</span><span class="pill pg">65 גר'</span></div>
+        <div class="row"><span class="rl">חלון אכילה</span><span class="pill pg">07:00 – 20:00</span></div>
+        <div class="row"><span class="rl">מים</span><span class="pill pb">3–3.5 ליטר</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">תפריט יומי</div>
+        <div class="row"><span class="rl">07:00 בוקר</span><span style="font-size:12px;color:var(--text2)">3 ביצים + קוואקר + פרי | 450</span></div>
+        <div class="row"><span class="rl">10:30 ביניים</span><span style="font-size:12px;color:var(--text2)">שקדים + תפוח | 180</span></div>
+        <div class="row"><span class="rl">13:00 צהריים</span><span style="font-size:12px;color:var(--text2)">עוף 200 גר' + אורז מלא | 550</span></div>
+        <div class="row"><span class="rl">16:00 ביניים</span><span style="font-size:12px;color:var(--text2)">2 ביצים + עגבנייה | 160</span></div>
+        <div class="row"><span class="rl">19:00 ערב</span><span style="font-size:12px;color:var(--text2)">דג + בטטה + ירקות | 480</span></div>
+        <div class="row" style="background:var(--red-bg);border-radius:8px;padding:7px 10px;margin-top:6px"><span style="font-weight:600">אחרי 20:00</span><span class="pill pr">אפס קלוריות</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">פתרון לאכילת לילה</div>
+        <div class="row"><span class="rl">תה צמחים חם</span><span class="pill pg">מותר</span></div>
+        <div class="row"><span class="rl">מים + לימון</span><span class="pill pg">מותר</span></div>
+        <div class="row"><span class="rl">ארוחת ערב ב-19:30</span><span class="pill pg">מומלץ</span></div>
+        <div class="row"><span class="rl">כל מזון אחר</span><span class="pill pr">לא</span></div>
+      </div>
+    </div>
+
+    <div class="panel" id="p-training">
+      <div class="card-title" style="margin-bottom:8px">לוח שבועי</div>
+      <div class="week">
+        <div class="day strength"><div class="day-n">א'</div><div class="day-t">כוח</div></div>
+        <div class="day cardio"><div class="day-n">ב'</div><div class="day-t">קרדיו</div></div>
+        <div class="day strength"><div class="day-n">ג'</div><div class="day-t">כוח</div></div>
+        <div class="day rest"><div class="day-n">ד'</div><div class="day-t">מנוחה</div></div>
+        <div class="day strength"><div class="day-n">ה'</div><div class="day-t">כוח</div></div>
+        <div class="day cardio"><div class="day-n">ו'</div><div class="day-t">קרדיו</div></div>
+        <div class="day rest"><div class="day-n">ש'</div><div class="day-t">מנוחה</div></div>
+      </div>
+      <div class="card" id="today-card" style="border-color:rgba(124,106,247,0.4)">
+        <div class="card-title" style="color:var(--accent)">אימון היום</div>
+        <div id="today-content"></div>
+      </div>
+      <div class="card"><div class="card-title">א' — חזה + כתפיים</div>
+        <div class="row"><span class="rl">לחיצת חזה</span><span class="pill pb">4×10</span></div>
+        <div class="row"><span class="rl">פשיטות כתפיים</span><span class="pill pb">3×12</span></div>
+        <div class="row"><span class="rl">מתח</span><span class="pill pb">3×8</span></div>
+        <div class="row"><span class="rl">טריצפס פולי</span><span class="pill pb">3×12</span></div>
+        <div class="row"><span class="rl">פלאנק</span><span class="pill pg">3×45"</span></div>
+      </div>
+      <div class="card"><div class="card-title">ג' — גב + ביצפס</div>
+        <div class="row"><span class="rl">חתירה במוט</span><span class="pill pb">4×10</span></div>
+        <div class="row"><span class="rl">לט פולדאון</span><span class="pill pb">3×12</span></div>
+        <div class="row"><span class="rl">כפיפת ביצפס</span><span class="pill pb">3×12</span></div>
+        <div class="row"><span class="rl">Dead bug</span><span class="pill pg">3×10</span></div>
+      </div>
+      <div class="card"><div class="card-title">ה' — רגליים + ליבה</div>
+        <div class="row"><span class="rl">סקוואט</span><span class="pill pb">4×10</span></div>
+        <div class="row"><span class="rl">לאנג'</span><span class="pill pb">3×10</span></div>
+        <div class="row"><span class="rl">לג קרל</span><span class="pill pb">3×12</span></div>
+        <div class="row"><span class="rl">Russian twist</span><span class="pill pg">3×20</span></div>
+      </div>
+      <div class="card"><div class="card-title">ב' + ו' — קרדיו 30 דק'</div>
+        <div class="row"><span class="rl">חימום הליכה</span><span class="pill pa">5 דק'</span></div>
+        <div class="row"><span class="rl">ריצה 70% דופק</span><span class="pill pg">15 דק'</span></div>
+        <div class="row"><span class="rl">אינטרוולים ×4</span><span class="pill pr">30" מהיר</span></div>
+        <div class="row"><span class="rl">קירור</span><span class="pill pa">5 דק'</span></div>
+      </div>
+    </div>
+
+    <div class="panel" id="p-track">
+      <div class="card">
+        <div class="card-title">עדכון משקל</div>
+        <div class="w-inp-row">
+          <input type="number" id="w-in" min="60" max="150" step="0.1" placeholder="88.0" inputmode="decimal"/>
+          <button onclick="logW()">שמור</button>
+        </div>
+        <div class="pbar-labels"><span>88 ק"ג</span><span id="pct-l">0% הושג</span><span>80 ק"ג</span></div>
+        <div class="pbar"><div class="pfill" id="pfill" style="width:0%"></div></div>
+        <p id="p-msg" style="font-size:13px;color:var(--text2);margin-top:10px">עדכן משקל לראות התקדמות</p>
+      </div>
+      <div class="card">
+        <div class="card-title">בדיקת לילה</div>
+        <div class="streak-row">
+          <div class="si"><div class="sv" id="s-ok" style="color:var(--green)">0</div><div class="sl">הצלחות</div></div>
+          <div class="si"><div class="sv" id="s-streak" style="color:var(--amber)">0</div><div class="sl">רצף</div></div>
+          <div class="si"><div class="sv" id="s-fail" style="color:var(--red)">0</div><div class="sl">ליפולים</div></div>
+        </div>
+        <div class="night-btns">
+          <button class="nbtn nbtn-ok" onclick="nightLog(true)">✅ הצלחתי</button>
+          <button class="nbtn nbtn-fail" onclick="nightLog(false)">❌ אכלתי</button>
+        </div>
+        <div id="night-log"></div>
+      </div>
+      <div class="card" id="wlog-card" style="display:none">
+        <div class="card-title">היסטוריית משקל</div>
+        <div id="wlog-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">הגדרות</div>
+        <div class="row" style="cursor:pointer" onclick="resetKey()"><span class="rl">החלף API key</span><span style="font-size:13px;color:var(--accent)">שנה ←</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const SYSTEM=`אתה סוכן כושר ותזונה אישי בעברית. פרופיל:
+- גיל 45, גובה 178 ס"מ, משקל 88 ק"ג, יעד 80 ק"ג
+- רקע ספורטיבי עשיר, חוזר לכושר, ללא מגבלות פיזיות
+- לא אוכל מוצרי חלב בכלל
+- בעיה: אכילת שטויות בלילה — חלון אכילה 07:00–20:00
+- חלבון: ביצים, עוף, דגים, סלמון, טונה, קטניות, טחינה
+ענה בעברית, קצר (3-4 שורות), ידידותי ומעשי.`;
+
+const WORKOUTS={
+  0:{t:"💪 כוח — חזה + כתפיים",d:"לחיצת חזה 4×10\nפשיטות כתפיים 3×12\nמתח 3×8\nטריצפס פולי 3×12\nפלאנק 3×45\""},
+  1:{t:"🏃 קרדיו — 30 דק'",d:"חימום 5 דק'\nריצה קלה 15 דק'\nאינטרוולים ×4\nקירור 5 דק'"},
+  2:{t:"💪 כוח — גב + ביצפס",d:"חתירה במוט 4×10\nלט פולדאון 3×12\nכפיפת ביצפס 3×12\nDead bug 3×10"},
+  3:{t:"😴 מנוחה פעילה",d:"הליכה 20 דק'\nמתיחות 10 דק'"},
+  4:{t:"💪 כוח — רגליים + ליבה",d:"סקוואט 4×10\nלאנג' 3×10\nלג קרל 3×12\nRussian twist 3×20"},
+  5:{t:"🏃 קרדיו + ליבה",d:"ריצה 20 דק'\nפלאנק 3×60\"\nברפי ×10"},
+  6:{t:"😴 מנוחה מלאה",d:"שבת — מנוחה ✓\nהכן ארוחות לשבוע הבא"}
+};
+
+let hist=[];
+let state={weight:88,wLogs:[],nightLogs:[],streak:0,nightOk:0,nightFail:0};
+let API_KEY='';
+
+function init(){
+  API_KEY=localStorage.getItem('fc-key')||'';
+  try{const s=localStorage.getItem('fc-state');if(s)state=JSON.parse(s);}catch(e){}
+  renderState();
+  if(!API_KEY){showOverlay();}
+}
+
+function showOverlay(){
+  const o=document.createElement('div');
+  o.className='overlay';o.id='key-overlay';
+  o.innerHTML=`
+    <div class="key-icon">🔑</div>
+    <h2>הגדרה ראשונית</h2>
+    <p>הזן את ה-API key שלך מ-Anthropic.<br>הוא נשמר על המכשיר שלך בלבד ולא יישלח לשום מקום.</p>
+    <input id="key-inp" type="text" placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false"/>
+    <p>אין לך עדיין? <a href="https://console.anthropic.com" target="_blank">לחץ כאן</a> לקבל בחינם</p>
+    <button class="btn-main" onclick="saveKey()">שמור והתחל 💪</button>
+  `;
+  document.getElementById('app').appendChild(o);
+}
+
+function saveKey(){
+  const k=document.getElementById('key-inp').value.trim();
+  if(!k||!k.startsWith('sk-ant')){
+    alert('מפתח לא תקין — חייב להתחיל עם sk-ant');return;
+  }
+  API_KEY=k;
+  localStorage.setItem('fc-key',k);
+  document.getElementById('key-overlay').remove();
+  addMsg('ai','מעולה! הסוכן מוכן ועובד 💪\nשאל אותי כל שאלה על תזונה, אימונים, או אכילת לילה!');
+}
+
+function resetKey(){
+  if(!confirm('לאפס את ה-API key?'))return;
+  localStorage.removeItem('fc-key');
+  API_KEY='';
+  showOverlay();
+}
+
+function saveState(){try{localStorage.setItem('fc-state',JSON.stringify(state));}catch(e){}}
+
+function renderState(){
+  const w=state.weight||88;
+  document.getElementById('k-w').textContent=parseFloat(w).toFixed(1);
+  document.getElementById('k-bmi').textContent=(w/(1.78*1.78)).toFixed(1);
+  const rem=Math.max(0,w-80);
+  document.getElementById('k-wk').textContent=rem>0?'~'+Math.ceil(rem/0.5):'יעד!';
+  const pct=Math.max(0,Math.min(100,Math.round(((88-w)/8)*100)));
+  document.getElementById('pfill').style.width=pct+'%';
+  document.getElementById('pct-l').textContent=pct+'% הושג';
+  document.getElementById('p-msg').textContent=rem>0?`נותרו ${rem.toFixed(1)} ק"ג — המשך!`:'🎯 הגעת ליעד!';
+  document.getElementById('s-ok').textContent=state.nightOk||0;
+  document.getElementById('s-fail').textContent=state.nightFail||0;
+  document.getElementById('s-streak').textContent=state.streak||0;
+  document.getElementById('streak-badge').textContent='רצף: '+(state.streak||0)+' ימים';
+  if(state.wLogs&&state.wLogs.length){
+    document.getElementById('wlog-card').style.display='block';
+    document.getElementById('wlog-list').innerHTML=state.wLogs.slice(-6).reverse().map(e=>`<div class="log-row"><span>${e.d}</span><span style="font-weight:600">${e.w} ק"ג</span></div>`).join('');
+  }
+  document.getElementById('night-log').innerHTML=(state.nightLogs||[]).slice(-5).reverse().map(e=>`<div class="log-row"><span>${e.d}</span><span class="pill ${e.ok?'pg':'pr'}">${e.ok?'הצלחתי':'אכלתי'}</span></div>`).join('');
+  const tw=WORKOUTS[new Date().getDay()];
+  document.getElementById('today-content').innerHTML=`<div style="font-weight:600;margin-bottom:8px">${tw.t}</div><div style="font-size:13px;color:var(--text2);line-height:1.9;white-space:pre-line">${tw.d}</div>`;
+}
+
+function show(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('p-'+id).classList.add('on');
+  btn.classList.add('on');
+}
+
+function addMsg(role,txt){
+  const c=document.getElementById('msgs');
+  const d=document.createElement('div');d.className='msg '+(role==='u'?'u':'ai');
+  const av=document.createElement('div');av.className='av';av.textContent=role==='u'?'אתה':'AI';
+  const b=document.createElement('div');b.className='bub';b.textContent=txt;
+  d.appendChild(av);d.appendChild(b);c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+
+function showLoad(){
+  const c=document.getElementById('msgs');
+  const d=document.createElement('div');d.className='msg ai';d.id='ld';
+  const av=document.createElement('div');av.className='av';av.textContent='AI';
+  const b=document.createElement('div');b.className='bub';
+  b.innerHTML='<div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+  d.appendChild(av);d.appendChild(b);c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+function rmLoad(){const e=document.getElementById('ld');if(e)e.remove();}
+
+async function callAI(txt){
+  if(!API_KEY){showOverlay();return;}
+  hist.push({role:'user',content:txt});
+  showLoad();
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':API_KEY,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,system:SYSTEM,messages:hist.slice(-12)})
+    });
+    const data=await r.json();
+    if(data.error){rmLoad();addMsg('ai','שגיאה: '+data.error.message);return;}
+    const reply=data.content.map(c=>c.text||'').join('');
+    rmLoad();addMsg('ai',reply);
+    hist.push({role:'assistant',content:reply});
+    hist=hist.slice(-20);
+  }catch(e){rmLoad();addMsg('ai','שגיאת חיבור. בדוק אינטרנט ונסה שוב.');}
+}
+
+function send(){
+  const inp=document.getElementById('inp');
+  const t=inp.value.trim();if(!t)return;
+  inp.value='';addMsg('u',t);callAI(t);
+}
+function q(t){addMsg('u',t);callAI(t);}
+document.getElementById('inp').addEventListener('keydown',e=>{if(e.key==='Enter')send();});
+
+function logW(){
+  const v=parseFloat(document.getElementById('w-in').value);
+  if(!v||v<50||v>200)return;
+  state.weight=v;
+  state.wLogs=state.wLogs||[];
+  state.wLogs.push({d:new Date().toLocaleDateString('he-IL'),w:v});
+  saveState();renderState();
+  document.getElementById('w-in').value='';
+}
+
+function nightLog(ok){
+  state.nightLogs=state.nightLogs||[];
+  state.nightLogs.push({d:new Date().toLocaleDateString('he-IL'),ok});
+  if(ok){state.nightOk=(state.nightOk||0)+1;state.streak=(state.streak||0)+1;}
+  else{state.nightFail=(state.nightFail||0)+1;state.streak=0;}
+  saveState();renderState();
+  if(ok&&state.streak>0&&state.streak%7===0){
+    setTimeout(()=>{show('chat',document.querySelector('.nb'));addMsg('ai','🏆 שבוע שלם ללא אכילת לילה! זה שינוי הרגל אמיתי!');},400);
+  }else if(ok&&state.streak>=3){
+    setTimeout(()=>{show('chat',document.querySelector('.nb'));addMsg('ai','🔥 רצף של '+state.streak+' ימים! ממשיך לבנות הרגל חדש!');},400);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
